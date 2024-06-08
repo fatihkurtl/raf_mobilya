@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { IRegisterData } from "../interfaces/register";
+import useSwal from "../composables/useSwal";
 
 const RegisterForm = () => {
+
+    const { success, wargning } = useSwal();
 
     const [formData, setFormData] = useState<IRegisterData>({
         name: "",
@@ -23,6 +26,31 @@ const RegisterForm = () => {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         console.log(formData);
+        if (!formData.aggrement) {
+            wargning("Uyarı", "Lütfen hüküm ve koşulları kabul edin");
+            return;
+        }
+        if (formData.password !== formData.confirm) {
+            wargning("Uyarı", "Şifreler uyuşmuyor");
+            return;
+        }
+        if (formData.password.length < 6) {
+            wargning("Uyarı", "Şifre en az 6 karakter olmalıdır");
+            return;
+        }
+        if (!formData.name || !formData.email || !formData.password || !formData.confirm) {
+            wargning("Uyarı", "Lütfen tüm alanları doldurun");
+            return false;
+        } else {
+            success("Başarılı", "Hesabınız başarılı bir şekilde oluşturuldu");
+            setFormData({
+                name: "",
+                email: "",
+                password: "",
+                confirm: "",
+                aggrement: false,
+            });
+        }
     };
 
     return (
@@ -33,29 +61,29 @@ const RegisterForm = () => {
             <p className="text-gray-600 mb-6 text-sm">
                 Register for new cosutumer
             </p>
-            <form onSubmit={handleSubmit} method="post" autoComplete="off">
+            <form onSubmit={handleSubmit} method="post" autoComplete="on">
                 <div className="space-y-2">
                     <div>
                         <label htmlFor="name" className="text-gray-600 mb-2 block">Full Name</label>
-                        <input onChange={handleChange} type="text" name="name" id="name"
+                        <input onChange={handleChange} value={formData.name} type="text" name="name" id="name"
                             className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-primary placeholder-gray-400"
                             placeholder="fulan fulana"/>
                     </div>
                     <div>
                         <label htmlFor="email" className="text-gray-600 mb-2 block">Email address</label>
-                        <input type="email" onChange={handleChange} name="email" id="email"
+                        <input onChange={handleChange} value={formData.email} type="email" name="email" id="email"
                             className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-primary placeholder-gray-400"
                             placeholder="youremail.@domain.com" />
                     </div>
                     <div>
                         <label htmlFor="password" className="text-gray-600 mb-2 block">Password</label>
-                        <input type="password" onChange={handleChange} name="password" id="password"
+                        <input onChange={handleChange} value={formData.password} type="password" name="password" id="password"
                             className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-primary placeholder-gray-400"
                             placeholder="*******"/>
                     </div>
                     <div>
                         <label htmlFor="confirm" className="text-gray-600 mb-2 block">Confirm password</label>
-                        <input type="password" onChange={handleChange} name="confirm" id="confirm"
+                        <input onChange={handleChange} value={formData.confirm} type="password" name="confirm" id="confirm"
                             className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-primary placeholder-gray-400"
                             placeholder="*******" />
                     </div>

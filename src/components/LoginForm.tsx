@@ -1,6 +1,41 @@
 import { Link } from "react-router-dom"
+import { useState } from "react"
+import useSwal from "../composables/useSwal"
+import { ILogin } from "../interfaces/login"
 
 const LoginForm = () => {
+
+    const { success, wargning } = useSwal()
+
+    const [formData, setFormData] = useState<ILogin>({
+        email: "",
+        password: "",
+        remember: false,
+    })
+
+    const handleChange = (e: any) => {
+        const { name, value, type, checked } = e.target
+        setFormData({
+            ...formData,
+            [name]: type === "checkbox" ? checked : value,
+        })
+    }
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault()
+        console.log(formData)
+        if (!formData.email || !formData.password) {
+            wargning("Uyarı", "Lütfen tüm alanları doldurun")
+            return false
+        } else {
+            success("Başarılı", "Giriş başarılı")
+            setFormData({
+                email: "",
+                password: "",
+            })
+        }
+    }
+
     return (
         <>
          <div className="contain py-16">
@@ -9,24 +44,24 @@ const LoginForm = () => {
             <p className="text-gray-600 mb-6 text-sm">
                 welcome back customer
             </p>
-            <form action="#" method="post" autoComplete="off">
+            <form onSubmit={handleSubmit} method="post" autoComplete="on">
                 <div className="space-y-2">
                     <div>
                         <label htmlFor="email" className="text-gray-600 mb-2 block">Email address</label>
-                        <input type="email" name="email" id="email"
+                        <input onChange={handleChange} value={formData.email} type="email" name="email" id="email"
                             className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-primary placeholder-gray-400"
                             placeholder="youremail.@domain.com"/>
                     </div>
                     <div>
                         <label htmlFor="password" className="text-gray-600 mb-2 block">Password</label>
-                        <input type="password" name="password" id="password"
+                        <input onChange={handleChange} value={formData.password} type="password" name="password" id="password"
                             className="block w-full border border-gray-300 px-4 py-3 text-gray-600 text-sm rounded focus:ring-0 focus:border-primary placeholder-gray-400"
                             placeholder="*******"/>
                     </div>
                 </div>
                 <div className="flex items-center justify-between mt-6">
                     <div className="flex items-center">
-                        <input type="checkbox" name="remember" id="remember"
+                        <input onChange={handleChange} value={formData.remember} type="checkbox" name="remember" id="remember"
                             className="text-primary focus:ring-0 rounded-sm cursor-pointer"/>
                         <label htmlFor="remember" className="text-gray-600 ml-3 cursor-pointer">Remember me</label>
                     </div>
